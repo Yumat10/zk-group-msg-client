@@ -34,7 +34,7 @@ const { connectors } = getDefaultWallets({
 });
 
 const wagmiClient = createClient({
-  autoConnect: true,
+  autoConnect: false,
   provider,
   connectors,
 });
@@ -45,12 +45,12 @@ export default function App({ Component, pageProps }: AppProps) {
       <Script src="/snarkjs.min.js" />
       <WagmiConfig client={wagmiClient}>
         <RainbowKitProvider chains={chains}>
-          <ZKContextProvider>
-            <GroupMsgContextProvider>
+          <GroupMsgContextProvider>
+            <ZKContextProvider>
               <Navbar />
               <Component {...pageProps} />
-            </GroupMsgContextProvider>
-          </ZKContextProvider>
+            </ZKContextProvider>
+          </GroupMsgContextProvider>
         </RainbowKitProvider>
       </WagmiConfig>
     </>

@@ -1,13 +1,12 @@
+import { useGroupMsgContext } from 'contexts/GroupMsgContext';
 import { useZKContext } from 'contexts/ZKContext';
+import { MsgList } from 'pageElements/home/MsgList';
 import { SendGroupMsgInput, ZKCircuit } from 'types/ZK.type';
 
 export default function Home() {
-  const {
-    isGeneratingProof,
-    sendGroupMsg,
-    isLoadingSendMsgTx,
-    isSuccessSendMsgTx,
-  } = useZKContext();
+  const { allMsg, isLoadingSendMsgTx, isSuccessSendMsgTx, isErrorSendMsgTx } =
+    useGroupMsgContext();
+  const { isGeneratingProof, generateSendGroupMsgProof } = useZKContext();
 
   const textGroupMsgInputs: SendGroupMsgInput = {
     msg: 'test message',
@@ -30,10 +29,10 @@ export default function Home() {
     <div className="page-container">
       <h2 className="text-5xl underline">zkGM</h2>
       <p className="text-2xl mt-5">zero-knowledge group messaging</p>
-      <button
+      {/* <button
         disabled={isLoadingSendMsgTx}
         onClick={() => {
-          sendGroupMsg(textGroupMsgInputs);
+          generateSendGroupMsgProof(textGroupMsgInputs);
         }}
       >
         {isGeneratingProof === ZKCircuit.SEND_GROUP_MSG
@@ -41,7 +40,10 @@ export default function Home() {
           : 'Generate Proof'}
       </button>
       {isLoadingSendMsgTx && <p>Loading...</p>}
-      {isSuccessSendMsgTx && <p>Success! 🙌</p>}
+      {isSuccessSendMsgTx && <p>Success! 🙌</p>} */}
+      <div>
+        <MsgList />
+      </div>
     </div>
   );
 }
