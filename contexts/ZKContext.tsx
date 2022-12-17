@@ -7,7 +7,8 @@ import {
   useContext,
   useState,
 } from 'react';
-import { SendGroupMsgInput, ZKCircuit, ZKProof } from 'types/ZK.type';
+import { SendGroupMsgInput } from 'types/GroupMsg.type';
+import { ZKCircuit, ZKProof } from 'types/ZK.type';
 import { hashMessage } from 'utils/Mimc';
 import { useNetwork, useSigner, useWaitForTransaction } from 'wagmi';
 
@@ -15,6 +16,10 @@ import GroupMsgArtifact from 'contracts/GroupMsg.json';
 import { Contract, ethers } from 'ethers';
 import { write } from 'fs';
 import { useGroupMsgContext } from './GroupMsgContext';
+
+import SendGroupMsgVKey from '../public/circuits/sendGroupMsg/sendGroupMsg.vkey.json';
+import { getElipticCurvePointsFromProof } from 'utils/EllipticCurvePointsFromProof';
+import { asciiToHex } from 'utils/HexToAscii';
 
 const MAX_GROUP_SIZE = 10;
 
@@ -62,10 +67,13 @@ export const ZKContextProvider = ({ children }: { children: ReactNode }) => {
     );
 
     const proverInput: SendGroupMsgInput = {
-      msg: hashMessage(msg).toString(), // Hash the msg string => bigint
-      senderSecret,
-      groupPubs,
+      msg: asciiToHex(msg),
+      senderSecret: '0x12345',
+      groupPubs: groupPubs,
     };
+
+    console.log('---proverInput---');
+    // console.log(proverInput);
 
     try {
       const { proof, publicSignals } = await snarkjs.groth16.fullProve(
@@ -73,16 +81,29 @@ export const ZKContextProvider = ({ children }: { children: ReactNode }) => {
         '/circuits/sendGroupMsg/sendGroupMsg.wasm',
         '/circuits/sendGroupMsg/sendGroupMsg.zkey'
       );
-      const sendMsgProof = proof as ZKProof;
 
-      setSendMsgArgs([
-        sendMsgProof.pi_a.slice(0, 2),
-        sendMsgProof.pi_b.slice(0, 2),
-        sendMsgProof.pi_c.slice(0, 2),
+      const elipticCurvePoints = getElipticCurvePointsFromProof(
+        proof as ZKProof
+      );
+      const sendGroupMsgArgs = [...elipticCurvePoints, publicSignals];
+
+      console.log('---sendGroupMsgArgs---', sendGroupMsgArgs);
+
+      // Verify proof
+      const isValidProof = await snarkjs.groth16.verify(
+        SendGroupMsgVKey,
         publicSignals,
-      ]);
+        proof
+      );
+      console.log('Is valid proof? ', isValidProof);
 
       setIsGeneratingProof(undefined);
+
+      console.log('---sendGroupMsgArgs---');
+      console.log(sendGroupMsgArgs);
+
+      // // Send the proof to the verifier contract
+      await sendGroupMsgTx(sendGroupMsgArgs);
     } catch (error) {
       console.log(error);
       setZkErrors({
@@ -91,9 +112,6 @@ export const ZKContextProvider = ({ children }: { children: ReactNode }) => {
       setIsGeneratingProof(undefined);
       return;
     }
-
-    // Send the proof to the verifier contract
-    await sendGroupMsgTx();
   }
 
   return (

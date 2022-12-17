@@ -6,13 +6,9 @@ export enum ZKCircuit {
 export interface ZKProof {
   curve: string;
   pi_a: string[];
-  pi_b: string[];
+  pi_b: string[][];
   pi_c: string[];
   protocol: string;
 }
 
-export interface SendGroupMsgInput {
-  msg: string;
-  senderSecret: string;
-  groupPubs: string[];
-}
+export type ZKVerifierInput = (string[] | string[][])[];

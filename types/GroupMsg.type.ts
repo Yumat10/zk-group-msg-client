@@ -8,3 +8,9 @@ export interface GroupMsg {
   sender: BigNumber; // Address of sender (if revealed), 0x00 otherwise
   denied: BigNumber[]; // Addresses of group members that have denied
 }
+
+export interface SendGroupMsgInput {
+  msg: string;
+  senderSecret: string;
+  groupPubs: string[];
+}

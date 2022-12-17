@@ -1,6 +1,7 @@
 import { useGroupMsgContext } from 'contexts/GroupMsgContext';
 import { useZKContext } from 'contexts/ZKContext';
 import { MsgList } from 'pageElements/home/MsgList';
+import { NewMsg } from 'pageElements/home/NewMsg';
 import { SendGroupMsgInput, ZKCircuit } from 'types/ZK.type';
 
 export default function Home() {
@@ -41,6 +42,9 @@ export default function Home() {
       </button>
       {isLoadingSendMsgTx && <p>Loading...</p>}
       {isSuccessSendMsgTx && <p>Success! 🙌</p>} */}
+      <div>
+        <NewMsg />
+      </div>
       <div>
         <MsgList />
       </div>

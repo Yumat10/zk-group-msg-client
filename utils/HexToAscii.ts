@@ -1,4 +1,4 @@
-// Functions copied from Web3Js
+// Functions copied from Web3js
 
 // Taken from:
 // https://github.com/web3/web3.js/blob/84e0f3756bcf0c8421c2c495e053b55ecc08d53d/packages/web3-utils/src/utils.js#L373
@@ -37,4 +37,27 @@ export function hexToAscii(hex: string): string {
   }
 
   return utf8.decode(str);
+}
+
+// Taken from:
+// https://github.com/web3/web3.js/blob/1.x/packages/web3-utils/src/utils.js
+export function asciiToHex(str: string): string {
+  str = utf8.encode(str);
+  var hex = '';
+
+  // remove \u0000 padding from either side
+  str = str.replace(/^(?:\u0000)*/, '');
+  str = str.split('').reverse().join('');
+  str = str.replace(/^(?:\u0000)*/, '');
+  str = str.split('').reverse().join('');
+
+  for (var i = 0; i < str.length; i++) {
+    var code = str.charCodeAt(i);
+    // if (code !== 0) {
+    var n = code.toString(16);
+    hex += n.length < 2 ? '0' + n : n;
+    // }
+  }
+
+  return '0x' + hex;
 }

@@ -44,6 +44,8 @@ a {
 
 input {
   border-radius: 0;
+  border-width: theme(borderWidth.4);
+  border-color: theme(borderColor.off-black);
 }
 
 body {
@@ -64,6 +66,10 @@ html {
 @media only screen and (max-width: 1024px) {
   html {
     font-size: 11px;
+  }
+
+  input {
+    border-width: theme(borderWidth.2);
   }
 }
 
